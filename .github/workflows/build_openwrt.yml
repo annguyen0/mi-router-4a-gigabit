@@ -65,8 +65,9 @@ jobs:
       if: steps.compile.outputs.status == 'success' && !cancelled()
       id: build
       run: |
-        cp -f openwrt/bin/targets/*/*/*.tar.gz out/ && sync
-        cp -f openwrt/bin/targets/*/*/*.bin out/ && sync
+        mkdir -p ${PWD}/out
+        cp -f openwrt/bin/targets/*/*/*.tar.gz ${PWD}/out/ && sync
+        cp -f openwrt/bin/targets/*/*/*.bin ${PWD}/out/ && sync
         echo "PACKAGED_OUTPUTPATH=${PWD}/out" >> $GITHUB_ENV
         echo "PACKAGED_OUTPUTDATE=$(date +"%Y.%m.%d.%H%M")" >> $GITHUB_ENV
         echo "::set-output name=status::success"
