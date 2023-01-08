@@ -60,7 +60,7 @@ jobs:
       id: compile
       run: |
         cd openwrt
-        git am 0001-Switch-kernel-default-to-5.15.patch
+        patch -p1 < 0001-Switch-kernel-default-to-5.15.patch
         echo -e "$(nproc) thread compile"
         make -j16
         #make -j16 download clean world
