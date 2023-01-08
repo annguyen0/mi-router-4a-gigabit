@@ -1,0 +1,27 @@
+From adf64cbba8b5f8e58d18b3b900f0741e7b846775 Mon Sep 17 00:00:00 2001
+From: An Nguyen <phucan.nguyen@daum.net>
+Date: Sun, 8 Jan 2023 22:43:30 +0700
+Subject: [PATCH] Switch kernel default to 5.15
+
+---
+ target/linux/ramips/Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/target/linux/ramips/Makefile b/target/linux/ramips/Makefile
+index 7d34dfe676..17d3f1e2db 100644
+--- a/target/linux/ramips/Makefile
++++ b/target/linux/ramips/Makefile
+@@ -10,8 +10,8 @@ BOARDNAME:=MediaTek Ralink MIPS
+ SUBTARGETS:=mt7620 mt7621 mt76x8 rt288x rt305x rt3883
+ FEATURES:=squashfs gpio
+ 
+-KERNEL_PATCHVER:=5.10
+-KERNEL_TESTING_PATCHVER:=5.15
++KERNEL_PATCHVER:=5.15
++#KERNEL_TESTING_PATCHVER:=5.15
+ 
+ define Target/Description
+ 	Build firmware images for Ralink RT288x/RT3xxx based boards.
+-- 
+2.34.1
+
