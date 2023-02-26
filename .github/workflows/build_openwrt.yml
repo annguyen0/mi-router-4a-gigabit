@@ -6,9 +6,8 @@ on:
     branches:
       - main
   repository_dispatch:
-  workflow_dispatch:
   schedule:
-    - cron: '0 17 * * 0'
+    - cron: '0 17 * * *'
 
 env:
   REPO_URL: https://github.com/openwrt/openwrt
@@ -39,12 +38,14 @@ jobs:
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
         echo "COMPILE_STARTINGTIME=$(date +"%Y.%m.%d.%H%M")" >> $GITHUB_ENV
+
     - name: Clone source code
       working-directory: /workdir
       run: |
         df -hT $PWD
         git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
+
     - name: Update feeds
       run: cd openwrt && ./scripts/feeds update -a
 
@@ -56,18 +57,20 @@ jobs:
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE ] && cp -f $CONFIG_FILE openwrt/.config
         [ -e $PATCH_FILE ] && cp -f $PATCH_FILE openwrt/
+ 
     - name: Compile the firmware
       id: compile
       run: |
         cd openwrt
+        echo "COMMIT_ID=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
         #patch -p1 < 0001-Switch-kernel-default-to-5.15.patch
         echo -e "$(nproc) thread compile"
         make -j5 V=sc
-        #make -j16 download clean world
         grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
         [ -s DEVICE_NAME ] && echo "DEVICE_NAME=$(cat DEVICE_NAME)" >> $GITHUB_ENV
         echo "FILE_DATE=$(date +"%Y.%m.%d.%H%M")" >> $GITHUB_ENV
         echo "::set-output name=status::success"
+
     - name: Build OpenWrt firmware
       if: steps.compile.outputs.status == 'success' && !cancelled()
       id: build
@@ -78,11 +81,19 @@ jobs:
         echo "PACKAGED_OUTPUTPATH=${PWD}/out" >> $GITHUB_ENV
         echo "PACKAGED_OUTPUTDATE=$(date +"%Y.%m.%d.%H%M")" >> $GITHUB_ENV
         echo "::set-output name=status::success"
+ 
+    - name: tag-exists-action
+      uses: mukunku/tag-exists-action@v1.2.0
+      id: checkTag
+      with: 
+        tag: 'openwrt_r4a_daily_${{ env.COMMIT_ID }}'
+    - run: echo ${{ steps.checkTag.outputs.exists }}
+
     - name: Upload OpenWrt Firmware to Release
       uses: ncipollo/release-action@v1
-      if: steps.build.outputs.status == 'success' && !cancelled()
+      if: steps.build.outputs.status == 'success' && !cancelled() && steps.checkTag.outputs.exists == 'false'
       with:
-        tag: openwrt_r4a_daily_${{ env.PACKAGED_OUTPUTDATE }}
+        tag: openwrt_r4a_daily_${{ env.COMMIT_ID }}
         artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
         allowUpdates: true
         token: ${{ secrets.GITHUB_TOKEN }}
