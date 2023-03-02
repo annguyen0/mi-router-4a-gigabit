@@ -2,12 +2,13 @@
 name: Build OpenWrt
 
 on:
+  schedule:
+   - cron: "0 1 * * 2"
   push:
     branches:
       - main
   repository_dispatch:
-  schedule:
-    - cron: '0 17 * * *'
+  workflow_dispatch:
 
 env:
   REPO_URL: https://github.com/openwrt/openwrt
