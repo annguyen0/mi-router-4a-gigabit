@@ -10,7 +10,7 @@ on:
 
 env:
   REPO_URL: https://github.com/openwrt/openwrt
-  REPO_BRANCH: master
+  REPO_BRANCH: main
   CONFIG_FILE: router-config/r4a.config
   PATCH_FILE: router-config/0001-Switch-kernel-default-to-5.15.patch
   TZ: Asia/Shanghai
