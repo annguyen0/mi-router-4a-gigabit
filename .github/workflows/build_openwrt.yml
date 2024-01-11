@@ -83,7 +83,7 @@ jobs:
         echo "::set-output name=status::success"
  
     - name: tag-exists-action
-      uses: mukunku/tag-exists-action@v1.4.0
+      uses: mukunku/tag-exists-action@v1.5.0
       id: checkTag
       with: 
         tag: 'openwrt_r4a_daily_${{ env.COMMIT_ID }}'
