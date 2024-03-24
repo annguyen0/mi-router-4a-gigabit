@@ -62,7 +62,7 @@ jobs:
       run: |
         cd openwrt
         echo "COMMIT_ID=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
-        patch -p1 < 0001-Switch-kernel-default-to-5.15.patch
+        #patch -p1 < 0001-Switch-kernel-default-to-5.15.patch
         echo -e "$(nproc) thread compile"
         make prepare
         make -j5 V=sc
