@@ -55,7 +55,7 @@ jobs:
       run: |
         [ -e files ] && mv files openwrt/files
         [ -e $CONFIG_FILE ] && cp -f $CONFIG_FILE openwrt/.config
-        [ -e $PATCH_FILE ] && cp -f $PATCH_FILE openwrt/
+        #[ -e $PATCH_FILE ] && cp -f $PATCH_FILE openwrt/
  
     - name: Compile the firmware
       id: compile
